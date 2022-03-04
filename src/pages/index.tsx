@@ -1,4 +1,5 @@
 import { GetStaticProps } from 'next';
+import Head from 'next/head';
 
 import { getPrismicClient } from '../services/prismic';
 import { format } from 'date-fns';
@@ -7,7 +8,7 @@ import { FiCalendar, FiUser } from 'react-icons/fi';
 
 import commonStyles from '../styles/common.module.scss';
 import styles from './home.module.scss';
-import { Head } from 'next/document';
+import { RichText } from 'prismic-dom';
 
 interface Post {
   uid?: string;
@@ -37,7 +38,7 @@ export default function Home({ postsPagination }: HomeProps) {
 
       <img src="/Logo.png" alt="logo" />
 
-      {postsPagination.results.map(post => (
+      {postsPagination.results?.map(post => (
         <div key={post.uid}>
           <span>{post.data.title}</span>
           <p>{post.data.subtitle}</p>
