@@ -1,11 +1,11 @@
 import { GetStaticProps } from 'next';
 import Head from 'next/head';
+import Link from 'next/link';
 
 import { getPrismicClient } from '../services/prismic';
 import { format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
 import { FiCalendar, FiUser } from 'react-icons/fi';
-import Header from '../components/Header';
 
 import commonStyles from '../styles/common.module.scss';
 import styles from './home.module.scss';
@@ -37,25 +37,30 @@ export default function Home({ postsPagination }: HomeProps) {
         <title>Home | spacetraveling</title>
       </Head>
 
-      <Header />
+      <main className={commonStyles.container}>
+        <div className={commonStyles.posts}>
+          {postsPagination.results.map(post => (
+            <Link key={post.uid} href="">
+              <a key={post.uid}>
+                <h1>{post.data.title}</h1>
+                <p>{post.data.subtitle || ''}</p>
+                <div>
+                  <FiCalendar />
+                <time>
+                  {post.first_publication_date}
+                </time>
+                  <FiUser />
+                <span>
+                  {post.data.author || 'Sem author'}
+                </span>
 
-      <div className={commonStyles.container}>
-        {postsPagination.results.map(post => (
-          <div key={post.uid}>
-            <h1>{post.data.title}</h1>
-            <p>{post.data.subtitle || ''}</p>
-            <time>
-              <FiCalendar />
-              {post.first_publication_date}
-            </time>
-            <span>
-              <FiUser />
-              {post.data.author || ''}
-            </span>
-          </div>
-        ))}
-        {postsPagination.next_page && <button>Carregar mais posts</button>}
-      </div>
+                </div>
+              </a>
+            </Link>
+          ))}
+          {postsPagination.next_page && <a>Carregar mais posts</a>}
+        </div>
+      </main>
     </>
   );
 }
@@ -72,8 +77,7 @@ export const getStaticProps: GetStaticProps = async ({
       'post.author',
       'post.first_publication_date',
     ],
-    ref: previewData?.ref ?? null,
-    pageSize: 1,
+    ref: previewData?.ref ?? null
   });
 
   const posts = postsResponse.results.map(post => ({
