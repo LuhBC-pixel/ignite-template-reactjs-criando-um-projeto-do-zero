@@ -1,1 +1,10 @@
+.postsLinks {
+  color: var(--pink-500);
+  cursor: pointer;
+  transition: color 0.2s;
 
+
+  &:hover {
+    color: var(--white-500);
+  }
+}

@@ -40,25 +40,22 @@ export default function Home({ postsPagination }: HomeProps) {
       <main className={commonStyles.container}>
         <div className={commonStyles.posts}>
           {postsPagination.results.map(post => (
-            <Link key={post.uid} href="">
+            <Link key={post.uid} href={`/post/${post.uid}`}>
               <a key={post.uid}>
                 <h1>{post.data.title}</h1>
                 <p>{post.data.subtitle || ''}</p>
                 <div>
                   <FiCalendar />
-                <time>
-                  {post.first_publication_date}
-                </time>
+                  <time>{post.first_publication_date}</time>
                   <FiUser />
-                <span>
-                  {post.data.author || 'Sem author'}
-                </span>
-
+                  <span>{post.data.author || 'Sem author'}</span>
                 </div>
               </a>
             </Link>
           ))}
-          {postsPagination.next_page && <a>Carregar mais posts</a>}
+          {postsPagination.next_page && (
+            <a className={styles.postsLinks}>Carregar mais posts</a>
+          )}
         </div>
       </main>
     </>
@@ -77,7 +74,8 @@ export const getStaticProps: GetStaticProps = async ({
       'post.author',
       'post.first_publication_date',
     ],
-    ref: previewData?.ref ?? null
+    ref: previewData?.ref ?? null,
+    pageSize: 2,
   });
 
   const posts = postsResponse.results.map(post => ({
