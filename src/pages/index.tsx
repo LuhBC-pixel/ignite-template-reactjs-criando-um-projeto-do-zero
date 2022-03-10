@@ -9,6 +9,7 @@ import { FiCalendar, FiUser } from 'react-icons/fi';
 
 import commonStyles from '../styles/common.module.scss';
 import styles from './home.module.scss';
+import Header from '../components/Header';
 
 interface Post {
   uid?: string;
@@ -36,6 +37,8 @@ export default function Home({ postsPagination }: HomeProps) {
       <Head>
         <title>Home | spacetraveling</title>
       </Head>
+
+      <Header />
 
       <main className={commonStyles.container}>
         <div className={commonStyles.posts}>

@@ -8,6 +8,7 @@ import { FiCalendar, FiUser, FiClock } from 'react-icons/fi';
 
 import commonStyles from '../../styles/common.module.scss';
 import styles from './post.module.scss';
+import { ptBR } from 'date-fns/locale';
 
 interface Post {
   first_publication_date: string | null;
@@ -36,6 +37,7 @@ interface Content {
     text: string;
   }[];
 }
+[];
 
 export default function Post({ post }: PostProps) {
   const words = post.data.content.map(content => {
@@ -86,12 +88,14 @@ export default function Post({ post }: PostProps) {
 export const getStaticPaths: GetStaticPaths<any> = async () => {
   const prismic = getPrismicClient();
   const posts = await prismic.query('');
-  const paths = posts.results.map(post => ({
-    params: post.slugs,
-  }));
+  const params = posts.results.map(post => post.uid);
 
   return {
-    paths,
+    paths: params.map(param => ({
+      params: {
+        slug: param,
+      },
+    })),
     fallback: true,
   };
 };
@@ -102,17 +106,13 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   const prismic = getPrismicClient();
   const response = await prismic.getByUID('posts', String(slug), {});
 
-  const content = response.data.content.map((content: Content) => ({
-    heading: content.heading,
-    body: content.body.map(body => ({
-      text: RichText.asText(body.text),
-    })),
-  }));
-
-  const posts = {
+  const post: Post = {
     first_publication_date: format(
       new Date(response.first_publication_date),
-      'd LLL yyyy'
+      'd LLL yyyy',
+      {
+        locale: ptBR,
+      }
     ),
     data: {
       title: response.data.title,
@@ -120,13 +120,18 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
         url: response.data.banner.url,
       },
       author: response.data.author,
-      content: content,
+      content: response.data.content.map((content: Content) => ({
+        heading: content.heading,
+        body: content.body.map(body => ({
+          text: body.text,
+        })),
+      })),
     },
   };
 
   return {
     props: {
-      posts,
+      post,
     },
   };
 };
