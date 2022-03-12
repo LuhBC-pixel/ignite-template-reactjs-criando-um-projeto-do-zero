@@ -9,6 +9,8 @@ import { FiCalendar, FiUser, FiClock } from 'react-icons/fi';
 import commonStyles from '../../styles/common.module.scss';
 import styles from './post.module.scss';
 import { ptBR } from 'date-fns/locale';
+import Head from 'next/head';
+import { useRouter } from 'next/router';
 
 interface Post {
   first_publication_date: string | null;
@@ -31,52 +33,64 @@ interface PostProps {
   post: Post;
 }
 
-interface Content {
-  heading: string;
-  body: {
-    text: string;
-  }[];
-}
-[];
-
 export default function Post({ post }: PostProps) {
-  const words = post.data.content.map(content => {
-    const headigWordsArray = content.heading.split(' ');
-    const bodyTextWordsArray = content.body.map(body => body.text.split(' '));
+  const router = useRouter();
 
-    return [...headigWordsArray, ...bodyTextWordsArray];
-  });
+  if (router.isFallback) {
+    return <div>Carregando...</div>;
+  }
 
-  const wordsTotal = words.length + 1;
+  const timeRead = post.data.content.reduce((acc, curr) => {
+    const text = RichText.asText(curr.body).split(/<.+?>(.+?)<\/.+?>/g);
 
-  const wordsPersonReadPerMinute = 200;
+    const words = [];
+    text.forEach(word => {
+      word.split(' ').forEach(w => {
+        words.push(w);
+      });
+    });
 
-  const timeRead = (wordsTotal / wordsPersonReadPerMinute).toFixed();
+    const headingWords = curr.heading.split(' ');
+    const sumArray = headingWords.length + words.length;
+
+    const total = Math.ceil(sumArray / 200);
+
+    return acc + total;
+  }, 0);
 
   return (
     <>
+      <Head>
+        <title>{post.data.title} | spacetraveling.</title>
+      </Head>
       <Header />
 
+      <img
+        src={post.data.banner.url}
+        alt={post.data.title}
+        className={styles.banner}
+      />
       <main className={commonStyles.container}>
-        <div className={styles.post}>
-          <img src={post.data.banner.url} alt={post.data.title} />
-          <h1>{post.data.title}</h1>
-          <div>
+        <div className={commonStyles.posts}>
+          <h1 className={styles.title}>{post.data.title}</h1>
+
+          <div className={styles.info}>
             <FiCalendar />
             <time>{post.first_publication_date}</time>
             <FiUser />
-            <p>{post.data.author}</p>
+            <span>{post.data.author}</span>
             <FiClock />
-            <p>{`${timeRead} min`}</p>
+            <span>{`${timeRead} min`}</span>
           </div>
 
           {post.data.content.map(content => (
-            <div key={content.heading}>
+            <div key={content.heading} className={styles.content}>
               <h2>{content.heading}</h2>
-              {content.body.map(body => (
-                <p key={body.text}>{body.text}</p>
-              ))}
-              <hr />
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: RichText.asText(content.body),
+                }}
+              />
             </div>
           ))}
         </div>
@@ -120,12 +134,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
         url: response.data.banner.url,
       },
       author: response.data.author,
-      content: response.data.content.map((content: Content) => ({
-        heading: content.heading,
-        body: content.body.map(body => ({
-          text: body.text,
-        })),
-      })),
+      content: response.data.content,
     },
   };
 

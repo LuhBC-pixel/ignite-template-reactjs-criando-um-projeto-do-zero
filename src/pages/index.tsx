@@ -78,7 +78,6 @@ export const getStaticProps: GetStaticProps = async ({
       'post.first_publication_date',
     ],
     ref: previewData?.ref ?? null,
-    pageSize: 2,
   });
 
   const posts = postsResponse.results.map(post => ({

@@ -7,4 +7,10 @@
   height: 5rem;
   margin: 5rem auto;
   padding: 0 15rem;
+  cursor: pointer;
+  transition: filter 0.2s;
+
+  &:hover img {
+    filter: brightness(0.9);
+  }
 }
