@@ -1,10 +1,13 @@
 .postsLinks {
+  margin-top: 4rem;
   color: var(--pink-500);
-  cursor: pointer;
+  font-weight: 600;
+  border: 0;
+  background: transparent;
+  font-size: 1.125rem;
   transition: color 0.2s;
 
-
   &:hover {
-    color: var(--white-500);
+    color: var(--gray-500);
   }
 }
