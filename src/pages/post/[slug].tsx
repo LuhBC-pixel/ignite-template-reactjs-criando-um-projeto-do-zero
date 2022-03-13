@@ -76,11 +76,7 @@ export default function Post({ post }: PostProps) {
 
           <div className={styles.info}>
             <FiCalendar />
-            <time>
-              {format(new Date(post.first_publication_date), 'd LLL yyyy', {
-                locale: ptBR,
-              })}
-            </time>
+            <time>{format(new Date(post.first_publication_date), 'd LLL yyyy', {locale: ptBR})}</time>
             <FiUser />
             <span>{post.data.author}</span>
             <FiClock />
@@ -90,11 +86,7 @@ export default function Post({ post }: PostProps) {
           {post.data.content.map(content => (
             <div key={content.heading} className={styles.content}>
               <h2>{content.heading}</h2>
-              <div
-                dangerouslySetInnerHTML={{
-                  __html: RichText.asText(content.body),
-                }}
-              />
+              <p>{RichText.asText(content.body)}</p>
             </div>
           ))}
         </div>
