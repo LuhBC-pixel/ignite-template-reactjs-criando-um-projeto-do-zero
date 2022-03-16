@@ -1,16 +1,17 @@
-import { format } from 'date-fns';
 import { GetStaticPaths, GetStaticProps } from 'next';
+import Head from 'next/head';
+import { useRouter } from 'next/router';
 import { RichText } from 'prismic-dom';
 import Header from '../../components/Header';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 import { getPrismicClient } from '../../services/prismic';
+import { Comment } from '../../components/Comment';
 import { FiCalendar, FiUser, FiClock } from 'react-icons/fi';
 
 import commonStyles from '../../styles/common.module.scss';
 import styles from './post.module.scss';
-import { ptBR } from 'date-fns/locale';
-import Head from 'next/head';
-import { useRouter } from 'next/router';
 
 interface Post {
   first_publication_date: string | null;
@@ -90,6 +91,8 @@ export default function Post({ post }: PostProps) {
             </div>
           ))}
         </div>
+
+        <Comment />
       </main>
     </>
   );
